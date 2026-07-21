@@ -1,0 +1,79 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-image: radial-gradient(circle at 1px 1px, rgba(74, 63, 54, 0.05) 1px, transparent 0);
+    background-size: 20px 20px;
+  }
+
+  ::selection {
+    background: #d68d84;
+    color: #fbf7ee;
+  }
+
+  :focus-visible {
+    outline: 2px solid #785b4e;
+    outline-offset: 2px;
+  }
+
+  input,
+  textarea {
+    color: #4a3f36;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: #b3a68e;
+  }
+}
+
+@layer components {
+  .eyebrow {
+    @apply font-mono text-[11px] tracking-[0.14em] uppercase text-muted;
+  }
+
+  .card {
+    @apply bg-card border border-line rounded-card shadow-card p-5;
+  }
+
+  .field {
+    @apply bg-sand/60 border border-line rounded-lg px-3 py-2 text-sm outline-none transition-colors;
+  }
+  .field:focus {
+    @apply border-clay-light;
+  }
+
+  .btn-primary {
+    @apply bg-clay text-card font-medium text-sm rounded-lg px-4 py-2 hover:bg-clay-light transition-colors shrink-0;
+  }
+
+  .btn-secondary {
+    @apply border border-line text-ink font-medium text-sm rounded-lg px-4 py-2 hover:border-clay-light hover:text-clay transition-colors shrink-0;
+  }
+
+  .nav-btn {
+    @apply h-8 w-8 flex items-center justify-center rounded-full border border-line text-ink hover:border-clay-light hover:text-clay transition-colors;
+  }
+
+  .checkbox {
+    @apply h-4 w-4 shrink-0 rounded-full border-2 border-line flex items-center justify-center transition-colors hover:border-clay-light;
+  }
+  .checkbox-checked {
+    @apply bg-sage border-sage;
+  }
+  .checkbox-dot {
+    @apply h-1.5 w-1.5 rounded-full bg-card;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
