@@ -158,14 +158,23 @@ export interface StretchLog {
 // built with a simple loop, same as the day-of-week arrays already are.
 export const MEAL_SLOT_COUNT = 5;
 
-// A recipe in your library — just a name and a free-text notes box
-// (ingredients/instructions/whatever, unstructured). Deliberately simpler
-// than Exercise: no muscle-group-style category, since recipes don't need
-// one to be useful here.
+// Suggested tags for filtering the recipe book, e.g. "show me all my
+// chicken recipes." Same convention as MUSCLE_GROUPS for exercises: this is
+// a starter list for the dropdown/chip UI, not an enforced enum — a
+// recipe's `tags` field is just string[], so nothing breaks if a tag here
+// is ever renamed or a recipe ends up with a tag outside this list.
+export const RECIPE_TAGS = ["Chicken", "Beef", "Pork", "Fish", "Vegetarian"] as const;
+
+// A recipe in your library — a name, a free-text notes box
+// (ingredients/instructions/whatever, unstructured), and any number of tags
+// for filtering (e.g. a recipe could be both "Chicken" and "Vegetarian").
+// `tags` is optional so recipes saved before this field existed still load
+// fine — anywhere we read tags, we fall back to an empty array.
 export interface Recipe {
   id: string;
   name: string;
   notes?: string;
+  tags?: string[];
 }
 
 // The repeating "every week looks like this" schedule, one entry per

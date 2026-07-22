@@ -11,7 +11,7 @@ export function TrainingTrends({ data }: { data: DashboardData }) {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <p className="eyebrow">Training trends</p>
+          <p className="eyebrow">Movement trends</p>
           <h1 className="font-display text-2xl mt-1 text-ink">How it&apos;s going</h1>
         </div>
         {/* Plain <a>, not next/link's <Link> — see the note in src/app/page.tsx for why. */}

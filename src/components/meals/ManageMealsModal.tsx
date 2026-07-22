@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { DashboardData, Recipe } from "@/lib/types";
-import { MEAL_SLOT_COUNT } from "@/lib/types";
+import { MEAL_SLOT_COUNT, RECIPE_TAGS } from "@/lib/types";
 import { Modal } from "@/components/ui/Modal";
 
 type Props = {
@@ -28,7 +28,7 @@ export function ManageMealsModal({ data, update, onClose, initialTab }: Props) {
       <div className="flex gap-1 mb-5 border-b border-line">
         {(
           [
-            ["recipes", "Recipes"],
+            ["recipes", "Recipe book"],
             ["schedule", "Weekly schedule"],
           ] as [Tab, string][]
         ).map(([key, label]) => (
@@ -55,6 +55,12 @@ export function ManageMealsModal({ data, update, onClose, initialTab }: Props) {
 function RecipesTab({ data, update }: Pick<Props, "data" | "update">) {
   const [name, setName] = useState("");
   const [notes, setNotes] = useState("");
+  const [newTags, setNewTags] = useState<string[]>([]);
+  // Which tags are currently active in the filter bar. Empty = no filter,
+  // show everything. A recipe matches if it has ANY of the active tags
+  // (OR, not AND) — e.g. selecting both "Chicken" and "Fish" shows recipes
+  // tagged with either, not just ones tagged with both.
+  const [activeFilters, setActiveFilters] = useState<string[]>([]);
 
   function addRecipe(e: React.FormEvent) {
     e.preventDefault();
@@ -63,10 +69,12 @@ function RecipesTab({ data, update }: Pick<Props, "data" | "update">) {
       id: crypto.randomUUID(),
       name: name.trim(),
       notes: notes.trim() || undefined,
+      tags: newTags,
     };
     update((prev) => ({ ...prev, recipes: [...prev.recipes, recipe] }));
     setName("");
     setNotes("");
+    setNewTags([]);
   }
 
   function updateRecipe(id: string, patch: Partial<Recipe>) {
@@ -75,6 +83,21 @@ function RecipesTab({ data, update }: Pick<Props, "data" | "update">) {
       recipes: prev.recipes.map((r) => (r.id === id ? { ...r, ...patch } : r)),
     }));
   }
+
+  function toggleTag(list: string[], tag: string): string[] {
+    return list.includes(tag) ? list.filter((t) => t !== tag) : [...list, tag];
+  }
+
+  function toggleRecipeTag(recipeId: string, tag: string) {
+    const recipe = data.recipes.find((r) => r.id === recipeId);
+    if (!recipe) return;
+    updateRecipe(recipeId, { tags: toggleTag(recipe.tags ?? [], tag) });
+  }
+
+  const filteredRecipes =
+    activeFilters.length === 0
+      ? data.recipes
+      : data.recipes.filter((r) => (r.tags ?? []).some((t) => activeFilters.includes(t)));
 
   // Deleting a recipe cleans up every place that references it — both the
   // recurring default schedule and any one-off overrides — reverting those
@@ -109,16 +132,67 @@ function RecipesTab({ data, update }: Pick<Props, "data" | "update">) {
           rows={3}
           className="field w-full text-sm"
         />
+        <div className="flex flex-wrap gap-1.5">
+          {RECIPE_TAGS.map((tag) => (
+            <button
+              key={tag}
+              type="button"
+              onClick={() => setNewTags((prev) => toggleTag(prev, tag))}
+              className={`font-mono text-[11px] rounded-full px-2.5 py-1 border transition-colors ${
+                newTags.includes(tag)
+                  ? "bg-sage-light border-sage text-ink"
+                  : "border-line text-muted hover:border-clay-light hover:text-clay"
+              }`}
+            >
+              {tag}
+            </button>
+          ))}
+        </div>
         <button type="submit" className="btn-secondary">
           Add recipe
         </button>
       </form>
 
+      {data.recipes.length > 0 && (
+        <div className="mt-4 pt-3 border-t border-line">
+          <p className="eyebrow mb-2">Filter by tag</p>
+          <div className="flex flex-wrap gap-1.5">
+            <button
+              onClick={() => setActiveFilters([])}
+              className={`font-mono text-[11px] rounded-full px-2.5 py-1 border transition-colors ${
+                activeFilters.length === 0
+                  ? "bg-clay border-clay text-card"
+                  : "border-line text-muted hover:border-clay-light hover:text-clay"
+              }`}
+            >
+              All
+            </button>
+            {RECIPE_TAGS.map((tag) => (
+              <button
+                key={tag}
+                onClick={() => setActiveFilters((prev) => toggleTag(prev, tag))}
+                className={`font-mono text-[11px] rounded-full px-2.5 py-1 border transition-colors ${
+                  activeFilters.includes(tag)
+                    ? "bg-clay border-clay text-card"
+                    : "border-line text-muted hover:border-clay-light hover:text-clay"
+                }`}
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {data.recipes.length === 0 ? (
         <p className="text-sm text-muted mt-4">No recipes yet — add your first one above.</p>
+      ) : filteredRecipes.length === 0 ? (
+        <p className="text-sm text-muted mt-4">
+          No recipes match the selected tag{activeFilters.length > 1 ? "s" : ""}.
+        </p>
       ) : (
         <ul className="mt-4 space-y-3">
-          {data.recipes.map((r) => (
+          {filteredRecipes.map((r) => (
             <li key={r.id} className="border border-line rounded-lg p-3">
               <div className="flex items-center gap-2">
                 <input
@@ -141,6 +215,24 @@ function RecipesTab({ data, update }: Pick<Props, "data" | "update">) {
                 rows={2}
                 className="field w-full mt-2 py-1.5 text-sm"
               />
+              <div className="flex flex-wrap gap-1.5 mt-2">
+                {RECIPE_TAGS.map((tag) => {
+                  const active = (r.tags ?? []).includes(tag);
+                  return (
+                    <button
+                      key={tag}
+                      onClick={() => toggleRecipeTag(r.id, tag)}
+                      className={`font-mono text-[11px] rounded-full px-2.5 py-1 border transition-colors ${
+                        active
+                          ? "bg-sage-light border-sage text-ink"
+                          : "border-line text-muted hover:border-clay-light hover:text-clay"
+                      }`}
+                    >
+                      {tag}
+                    </button>
+                  );
+                })}
+              </div>
             </li>
           ))}
         </ul>
@@ -164,7 +256,7 @@ function ScheduleTab({ data, update }: Pick<Props, "data" | "update">) {
   if (data.recipes.length === 0) {
     return (
       <p className="text-sm text-muted">
-        Add recipes in the Recipes tab first, then come back here to set your default weekly
+        Add recipes in the Recipe book tab first, then come back here to set your default weekly
         schedule.
       </p>
     );

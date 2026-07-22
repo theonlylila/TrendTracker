@@ -93,7 +93,7 @@ export function WeekView({ initialData }: { initialData: DashboardData }) {
             }}
             className="font-mono text-[11px] text-clay hover:underline"
           >
-            Training trends →
+            Movement trends →
           </a>
         </div>
       </div>
