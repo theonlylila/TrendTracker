@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { DashboardData } from "@/lib/types";
+import { workoutWasPerformed } from "@/lib/types";
 import { getWeekDays, toDateKey } from "@/lib/week";
 import { ManageWorkoutsModal } from "./ManageWorkoutsModal";
 import { WorkoutLogModal } from "./WorkoutLogModal";
@@ -52,7 +53,8 @@ export function WorkoutTracker({ weekKey, weekStart, data, update }: Props) {
 
   const completedCount = days.filter((day) => {
     const dateKey = toDateKey(day);
-    return data.workoutLogs.some((l) => l.date === dateKey);
+    // Same rule as the Trends calendar: an emptied-out log doesn't count.
+    return data.workoutLogs.some((l) => l.date === dateKey && workoutWasPerformed(l));
   }).length;
 
   const logDay = logDateKey ? days.find((d) => toDateKey(d) === logDateKey) ?? null : null;
@@ -91,6 +93,10 @@ export function WorkoutTracker({ weekKey, weekStart, data, update }: Props) {
           const template = templateFor(templateId);
           const hasOverride = data.scheduleOverrides.some((o) => o.date === dateKey);
           const log = data.workoutLogs.find((l) => l.date === dateKey);
+          // "✓ logged" should only show for a log that actually has exercises;
+          // an empty leftover log shows "log" so you can reopen and finish it
+          // (or leave it — either way it no longer counts as a done workout).
+          const performed = !!log && workoutWasPerformed(log);
 
           return (
             <li key={dateKey} className="flex items-center gap-3">
@@ -120,10 +126,10 @@ export function WorkoutTracker({ weekKey, weekStart, data, update }: Props) {
               <button
                 onClick={() => setLogDateKey(dateKey)}
                 className={`font-mono text-[11px] shrink-0 ${
-                  log ? "text-sage-light" : "text-clay hover:underline"
+                  performed ? "text-sage-light" : "text-clay hover:underline"
                 }`}
               >
-                {log ? "✓ logged" : "log"}
+                {performed ? "✓ logged" : "log"}
               </button>
             </li>
           );

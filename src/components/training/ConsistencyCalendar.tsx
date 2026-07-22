@@ -1,6 +1,7 @@
 "use client";
 
 import type { DashboardData } from "@/lib/types";
+import { workoutWasPerformed } from "@/lib/types";
 import { toDateKey } from "@/lib/week";
 import { HeatmapCalendar } from "./HeatmapCalendar";
 
@@ -44,7 +45,9 @@ export function ConsistencyCalendar({ data, weeksToShow = 12 }: Props) {
       ? override.workoutTemplateId
       : data.defaultSchedule.find((d) => d.dayOfWeek === dayOfWeek)?.workoutTemplateId ?? null;
     const isRestDay = templateId === null;
-    const hasLog = data.workoutLogs.some((l) => l.date === dateKey);
+    // Only count a day as "worked out" if the log actually has exercises in
+    // it — an emptied-out log shell shouldn't keep a day marked as done/bonus.
+    const hasLog = data.workoutLogs.some((l) => l.date === dateKey && workoutWasPerformed(l));
 
     if (isRestDay) return hasLog ? "extra" : "rest";
     if (hasLog) return "done";

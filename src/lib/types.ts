@@ -98,6 +98,20 @@ export interface WorkoutLog {
   notes: string;
 }
 
+// A logged workout only "counts" as a workout actually performed if it has
+// at least one exercise in it. An empty log — e.g. you opened the log, then
+// removed every exercise from it — is treated as "no workout that day," so
+// the Training Trends calendar reverts that day back to a plain rest day
+// instead of leaving a green "done" / red "bonus" mark behind. Without this,
+// a leftover empty log shell keeps making it look like you trained when you
+// actually cleared the workout out. This lives here (next to the WorkoutLog
+// type) so every part of the app that asks "did a workout happen this day?"
+// answers it the same way — the Trends calendar and the weekly "✓ logged"
+// counter both call this, so they can never disagree.
+export function workoutWasPerformed(log: WorkoutLog): boolean {
+  return log.exercises.length > 0;
+}
+
 // ---- Stretch tracker ----
 // A single stretch in your library, e.g. "Couch Stretch".
 export interface Stretch {
