@@ -15,7 +15,9 @@ const STATUS_STYLES: Record<DayStatus, string> = {
   done: "bg-sage border-sage",
   missed: "bg-blush/40 border-blush",
   pending: "bg-transparent border-clay-light border-dashed",
-  extra: "bg-blush border-blush",
+  // Bonus stretching day — lighter green with a darker sage border, matching
+  // the workout calendar. Green so it reads as a good thing, not a miss.
+  extra: "bg-sage-light border-sage",
   rest: "bg-card border-line",
   future: "bg-transparent border-line border-dashed opacity-50",
 };
@@ -67,7 +69,7 @@ export function StretchConsistencyCalendar({ data, weeksToShow = 12 }: Props) {
       legend={[
         { swatch: "bg-sage border-sage", label: "stretched" },
         { swatch: "bg-blush/40 border-blush", label: "missed" },
-        { swatch: "bg-blush border-blush", label: "bonus" },
+        { swatch: "bg-sage-light border-sage", label: "bonus" },
         { swatch: "bg-card border-line", label: "none scheduled" },
       ]}
     />

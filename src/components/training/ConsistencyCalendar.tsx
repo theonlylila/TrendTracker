@@ -16,7 +16,11 @@ const STATUS_STYLES: Record<DayStatus, string> = {
   done: "bg-sage border-sage",
   missed: "bg-blush/40 border-blush",
   pending: "bg-transparent border-clay-light border-dashed",
-  extra: "bg-blush border-blush",
+  // "extra" = worked out on a rest day (bonus). A lighter green with a darker
+  // sage border so it clearly reads as a *good* thing (green, like "done"),
+  // while still looking distinct from a normal scheduled "done" day. Red
+  // (blush) is now reserved exclusively for "missed," so red always = a miss.
+  extra: "bg-sage-light border-sage",
   rest: "bg-card border-line",
   future: "bg-transparent border-line border-dashed opacity-50",
 };
@@ -63,7 +67,7 @@ export function ConsistencyCalendar({ data, weeksToShow = 12 }: Props) {
       legend={[
         { swatch: "bg-sage border-sage", label: "worked out" },
         { swatch: "bg-blush/40 border-blush", label: "missed" },
-        { swatch: "bg-blush border-blush", label: "bonus" },
+        { swatch: "bg-sage-light border-sage", label: "bonus" },
         { swatch: "bg-card border-line", label: "rest day" },
       ]}
     />
