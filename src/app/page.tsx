@@ -20,12 +20,12 @@ export default async function DashboardPage() {
             </p>
             <h1 className="font-display text-3xl mt-1 text-ink">Your Week</h1>
           </div>
-          {/* Plain <a>, not next/link's <Link> — this forces a full page reload so this
-              page and the training page never show each other stale, cached data. See
-              CLAUDE.md / conversation history for why this matters here. */}
-          <a href="/training" className="font-mono text-[11px] text-clay hover:underline">
-            Training trends →
-          </a>
+          {/* The "Training trends →" link used to live here as a plain <a>.
+              It now lives inside WeekView (a client component) instead,
+              because navigating there needs to wait for any pending save to
+              finish first — something only WeekView (which owns the save
+              logic via useDashboardStore) can do. See useDashboardStore.ts's
+              `flush` for why. */}
         </header>
 
         <WeekView initialData={data} />

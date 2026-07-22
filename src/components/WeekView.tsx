@@ -21,7 +21,7 @@ const statusLabel: Record<string, string> = {
 
 export function WeekView({ initialData }: { initialData: DashboardData }) {
   const [weekStart, setWeekStart] = useState(() => getMondayOfWeek(new Date()));
-  const { data, update, status } = useDashboardStore(initialData);
+  const { data, update, status, flush } = useDashboardStore(initialData);
   const weekKey = getWeekKey(weekStart);
   const isCurrentWeek = getWeekKey(new Date()) === weekKey;
 
@@ -56,13 +56,45 @@ export function WeekView({ initialData }: { initialData: DashboardData }) {
           </button>
         </div>
 
-        <p
-          className={`font-mono text-[11px] transition-opacity ${
-            status === "idle" ? "opacity-0" : "opacity-100"
-          } ${status === "error" ? "text-clay" : "text-muted"}`}
-        >
-          {statusLabel[status]}
-        </p>
+        <div className="flex items-center gap-3">
+          <p
+            className={`font-mono text-[11px] transition-opacity ${
+              status === "idle" ? "opacity-0" : "opacity-100"
+            } ${status === "error" ? "text-clay" : "text-muted"}`}
+          >
+            {statusLabel[status]}
+          </p>
+
+          {/* Plain <a>, not next/link's <Link> — clicking this still does a
+              full page reload (via window.location.href below), so this page
+              and the training page never show each other stale, cached data.
+              The onClick intercepts the click first, though: it waits for any
+              edit that hasn't reached the database yet to actually finish
+              saving (`await flush()`) before letting the navigation happen.
+              Without this, clicking here right after logging something could
+              tear down the page mid-save — the pending save is just a
+              scheduled `setTimeout` in memory, and closing/leaving the page
+              cancels it before it ever runs, silently losing that edit. */}
+          <a
+            href="/training"
+            onClick={async (e) => {
+              e.preventDefault();
+              const saved = await flush();
+              // Only navigate if the save actually succeeded (or there was
+              // nothing to save). If it failed (e.g. no internet right at
+              // that moment), stay put — the status text above will already
+              // say "Couldn't save — check your connection", so the user
+              // knows why and can retry, rather than being whisked away from
+              // an edit that never made it to the database.
+              if (saved) {
+                window.location.href = "/training";
+              }
+            }}
+            className="font-mono text-[11px] text-clay hover:underline"
+          >
+            Training trends →
+          </a>
+        </div>
       </div>
 
       <div className="grid md:grid-cols-2 gap-5">

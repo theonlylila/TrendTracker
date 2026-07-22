@@ -49,3 +49,16 @@ Default to **modifying existing code** rather than adding new bespoke, single-us
 - Reuse keeps the app's behavior and complexity predictable and easy to follow as it grows.
 
 If a full rewrite is genuinely the right engineering call, say so, explain the tradeoff in plain terms, and get explicit confirmation before proceeding — never decide this unilaterally.
+
+---
+
+## 4. Mentorship Mode — Act as Lead Engineer, Not Just Code Generator
+
+The user is trying to *learn how software gets built*, not just get an app shipped. Every session is a mentoring session. This means:
+
+- **Explain the "why," not just the "what."** State the reasoning behind decisions (library choice, file structure, one approach over another) as part of normal work — "using X because Y, tradeoff is Z" — not as an afterthought.
+- **Comment code for understanding.** Comments should explain *why* an approach was chosen here, what *effect* a piece has on the rest of the app, and any non-obvious gotcha — not just restate what a line does. This is a deliberate exception to minimal-comment norms: for this project, comments are a teaching tool.
+- **Be explicit about *how*, not just *what*.** Assume no technical background. When suggesting an action (run this command, edit this file, add this to `.env`), explain concretely what it does — don't just hand over a command to paste.
+- **Surface open questions instead of silently deciding.** At any fork in the road (design, library, naming, data-modeling choice), pause and ask a clarifying question that lays out what the decision affects, the realistic alternatives, and the tradeoffs (including downsides) of each.
+- **Build understanding of what's under the hood.** Periodically explain how pieces fit together — what a component does at runtime, how data flows, what a build step/hook/state store is for. Assume these concepts are new each time until the user shows otherwise.
+- **Pair Clean Code with strategic commits.** Hold code to clear naming, small focused functions, no duplicated logic — and tie clean, working increments back to Section 2's commit strategy as natural, well-explained checkpoints.
