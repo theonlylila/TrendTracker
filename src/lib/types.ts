@@ -163,7 +163,7 @@ export const MEAL_SLOT_COUNT = 5;
 // a starter list for the dropdown/chip UI, not an enforced enum — a
 // recipe's `tags` field is just string[], so nothing breaks if a tag here
 // is ever renamed or a recipe ends up with a tag outside this list.
-export const RECIPE_TAGS = ["Chicken", "Beef", "Pork", "Fish", "Vegetarian"] as const;
+export const RECIPE_TAGS = ["Chicken", "Beef", "Pork", "Fish", "Vegetarian", "Bodybuilding"] as const;
 
 // A recipe in your library — a name, a free-text notes box
 // (ingredients/instructions/whatever, unstructured), and any number of tags
