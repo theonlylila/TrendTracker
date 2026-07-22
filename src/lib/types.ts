@@ -151,6 +151,56 @@ export interface StretchLog {
   completedStretchIds: string[];
 }
 
+// ---- Meal tracker ----
+// You always have exactly 5 meal slots a day — generic "Meal 1"..."Meal 5",
+// not renameable to "Breakfast/Lunch/Dinner". Kept as a plain number (1-5)
+// rather than a union type so the schedule/override arrays below can be
+// built with a simple loop, same as the day-of-week arrays already are.
+export const MEAL_SLOT_COUNT = 5;
+
+// A recipe in your library — just a name and a free-text notes box
+// (ingredients/instructions/whatever, unstructured). Deliberately simpler
+// than Exercise: no muscle-group-style category, since recipes don't need
+// one to be useful here.
+export interface Recipe {
+  id: string;
+  name: string;
+  notes?: string;
+}
+
+// The repeating "every week looks like this" schedule, one entry per
+// (mealSlot, dayOfWeek) pair — 5 slots x 7 days = 35 entries total, always
+// fully populated (see emptyDashboardData below). This is the meal-tracker
+// equivalent of DefaultScheduleDay, with mealSlot as the added dimension
+// since you have 5 independent slots per day instead of 1 workout per day.
+export interface MealDefaultScheduleEntry {
+  mealSlot: number; // 1-5
+  dayOfWeek: number; // JS Date.getDay(): 0 = Sunday ... 6 = Saturday
+  recipeId: string | null; // null = nothing planned for this slot/day
+}
+
+// A one-off swap for a specific (mealSlot, date) — e.g. "just this
+// Tuesday's Meal 1, do the smoothie instead of the usual oatmeal." Takes
+// priority over the default schedule for that slot on that date only, same
+// idea as ScheduleOverride for workouts.
+export interface MealScheduleOverride {
+  id: string;
+  mealSlot: number;
+  date: string; // YYYY-MM-DD
+  recipeId: string | null;
+}
+
+// Lightweight "I ate the planned meal" confirmation. A MealCheck existing
+// for a given (mealSlot, date) means that meal was confirmed eaten — there's
+// no content to it beyond that, unlike WorkoutLog/StretchLog which record
+// what actually happened. You asked for a simple checkbox, not a log, so
+// this intentionally has nothing to edit besides existing or not existing.
+export interface MealCheck {
+  id: string;
+  mealSlot: number;
+  date: string; // YYYY-MM-DD
+}
+
 // ---- Steps tracker ----
 export interface StepEntry {
   id: string;
@@ -196,6 +246,10 @@ export interface DashboardData {
   stretchLogs: StretchLog[];
   stepEntries: StepEntry[];
   stepsGoal: number;
+  recipes: Recipe[];
+  mealDefaultSchedule: MealDefaultScheduleEntry[];
+  mealScheduleOverrides: MealScheduleOverride[];
+  mealChecks: MealCheck[];
 }
 
 export const emptyDashboardData: DashboardData = {
@@ -222,4 +276,15 @@ export const emptyDashboardData: DashboardData = {
   stretchLogs: [],
   stepEntries: [],
   stepsGoal: 15000,
+  recipes: [],
+  // Pre-populate every (mealSlot, dayOfWeek) combination up front — same
+  // reasoning as defaultSchedule/stretchDefaultSchedule above: the UI can
+  // always assume an entry exists for every slot/day pair rather than
+  // handling a "missing entry" case everywhere it reads the schedule.
+  mealDefaultSchedule: Array.from({ length: MEAL_SLOT_COUNT }, (_, i) => i + 1).flatMap(
+    (mealSlot) =>
+      [0, 1, 2, 3, 4, 5, 6].map((dayOfWeek) => ({ mealSlot, dayOfWeek, recipeId: null }))
+  ),
+  mealScheduleOverrides: [],
+  mealChecks: [],
 };
