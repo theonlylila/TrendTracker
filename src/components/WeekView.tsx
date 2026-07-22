@@ -27,6 +27,26 @@ export function WeekView({ initialData }: { initialData: DashboardData }) {
   const weekKey = getWeekKey(weekStart);
   const isCurrentWeek = getWeekKey(new Date()) === weekKey;
 
+  // Right now the Postgres database is the *only* copy of this data
+  // anywhere — there's no export/backup feature, which is risky once this
+  // app holds real personal data you'd be upset to lose. This gives you a
+  // one-click way to download everything (tasks, recipes, workout logs,
+  // supplements, all of it) as a plain JSON file you control, independent
+  // of the database. It downloads whatever's in `data` right now — the
+  // in-memory state — rather than re-fetching from the DB, so it always
+  // reflects your most recent edits, even ones still mid-save.
+  function downloadBackup() {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    // Date-stamped filename so repeated downloads don't overwrite each
+    // other in your Downloads folder — each one is its own dated snapshot.
+    a.download = `your-week-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
@@ -66,6 +86,13 @@ export function WeekView({ initialData }: { initialData: DashboardData }) {
           >
             {statusLabel[status]}
           </p>
+
+          <button
+            onClick={downloadBackup}
+            className="font-mono text-[11px] text-clay hover:underline"
+          >
+            download backup
+          </button>
 
           {/* Plain <a>, not next/link's <Link> — clicking this still does a
               full page reload (via window.location.href below), so this page

@@ -137,6 +137,12 @@ function RoutinesTab({ data, update }: Pick<Props, "data" | "update">) {
     }));
   }
 
+  // Same cleanup pattern as removeTemplate in ManageWorkoutsModal: clear the
+  // routine from the default schedule and overrides, AND null it out of any
+  // past logs that reference it, so nothing in the app is left holding an
+  // id that no longer exists in stretchRoutines. Safe to null (rather than
+  // delete) the log's routineId because StretchLog keeps its own
+  // routineName snapshot — the log still shows what you did.
   function removeRoutine(id: string) {
     update((prev) => ({
       ...prev,
@@ -146,6 +152,9 @@ function RoutinesTab({ data, update }: Pick<Props, "data" | "update">) {
       ),
       stretchScheduleOverrides: prev.stretchScheduleOverrides.map((o) =>
         o.routineId === id ? { ...o, routineId: null } : o
+      ),
+      stretchLogs: prev.stretchLogs.map((l) =>
+        l.routineId === id ? { ...l, routineId: null } : l
       ),
     }));
   }

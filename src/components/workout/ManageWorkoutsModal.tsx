@@ -171,6 +171,15 @@ function WorkoutsTab({ data, update }: Pick<Props, "data" | "update">) {
     }));
   }
 
+  // Deleting a template cleans up every place that references it — the
+  // recurring default schedule, one-off overrides, AND past logged
+  // workouts. That last one matters: without it, a WorkoutLog would keep
+  // pointing at a workoutTemplateId that no longer exists in
+  // workoutTemplates, an orphaned reference nothing else in the app could
+  // ever clean up later. Nulling it out (rather than deleting the log
+  // itself) is safe because WorkoutLog already keeps its own workoutName
+  // snapshot for display — the log still shows what you did, it just stops
+  // being able to link back to a template that's gone.
   function removeTemplate(id: string) {
     update((prev) => ({
       ...prev,
@@ -180,6 +189,9 @@ function WorkoutsTab({ data, update }: Pick<Props, "data" | "update">) {
       ),
       scheduleOverrides: prev.scheduleOverrides.map((o) =>
         o.workoutTemplateId === id ? { ...o, workoutTemplateId: null } : o
+      ),
+      workoutLogs: prev.workoutLogs.map((l) =>
+        l.workoutTemplateId === id ? { ...l, workoutTemplateId: null } : l
       ),
     }));
   }

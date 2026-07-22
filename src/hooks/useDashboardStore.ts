@@ -158,5 +158,29 @@ export function useDashboardStore(initialData: DashboardData) {
     return () => window.removeEventListener("pagehide", handlePageHide);
   }, [flush]);
 
+  // A last line of defense, distinct from the handlers above: those try to
+  // save automatically on the way out, but a save can only succeed if
+  // there's actually a network connection right then — e.g. `status ===
+  // "error"` means a save already failed once, so silently retrying on
+  // pagehide could easily fail again the exact same way. Rather than let
+  // that edit vanish with no warning, `beforeunload` lets us pop the
+  // browser's native "leave site? changes may not be saved" confirmation
+  // whenever there's still an unsaved edit (`pendingDataRef.current` isn't
+  // null) or the last save attempt errored out — giving the user a chance
+  // to stay, notice the "Couldn't save" message, and fix their connection
+  // before losing the edit for good. Browsers ignore any custom message
+  // text here and show their own wording, but `preventDefault` + setting
+  // `returnValue` is still the standard way to trigger that dialog at all.
+  useEffect(() => {
+    function handleBeforeUnload(e: BeforeUnloadEvent) {
+      if (pendingDataRef.current !== null || status === "error") {
+        e.preventDefault();
+        e.returnValue = "";
+      }
+    }
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [status]);
+
   return { data, update, status, flush };
 }
