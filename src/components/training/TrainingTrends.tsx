@@ -22,7 +22,7 @@ export function TrainingTrends({ data }: { data: DashboardData }) {
 
       <div className="space-y-5">
         <div className="card overflow-x-auto">
-          <p className="eyebrow mb-3">Consistency, last 12 weeks</p>
+          <p className="eyebrow mb-3">Training consistency, last 12 weeks</p>
           <ConsistencyCalendar data={data} />
         </div>
 
