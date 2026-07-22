@@ -210,6 +210,29 @@ export interface MealCheck {
   date: string; // YYYY-MM-DD
 }
 
+// ---- Supplement tracker ----
+// A supplement in your library — a name and optional notes (e.g. dosage,
+// "take with food"). Deliberately simple, same shape as Exercise/Stretch —
+// no scheduling fields, because unlike workouts/meals, every supplement in
+// your library applies every day. There's no "which supplement is assigned
+// to Tuesday" question to answer, so there's no default-schedule/override
+// system here at all — just this library plus the flat check-off log below.
+export interface Supplement {
+  id: string;
+  name: string;
+  notes?: string;
+}
+
+// "I took this supplement on this date." A matching entry existing for
+// (supplementId, date) means it was taken that day — same lightweight
+// "existence = confirmed" idea as MealCheck, just keyed by supplement
+// instead of meal slot (since there's no schedule to check against first).
+export interface SupplementCheck {
+  id: string;
+  supplementId: string;
+  date: string; // YYYY-MM-DD
+}
+
 // ---- Steps tracker ----
 export interface StepEntry {
   id: string;
@@ -259,6 +282,8 @@ export interface DashboardData {
   mealDefaultSchedule: MealDefaultScheduleEntry[];
   mealScheduleOverrides: MealScheduleOverride[];
   mealChecks: MealCheck[];
+  supplements: Supplement[];
+  supplementChecks: SupplementCheck[];
 }
 
 export const emptyDashboardData: DashboardData = {
@@ -296,4 +321,6 @@ export const emptyDashboardData: DashboardData = {
   ),
   mealScheduleOverrides: [],
   mealChecks: [],
+  supplements: [],
+  supplementChecks: [],
 };

@@ -10,6 +10,7 @@ import { StretchTracker } from "./stretch/StretchTracker";
 import { StepsTracker } from "./steps/StepsTracker";
 import { WeeklyFocusCard } from "./WeeklyFocusCard";
 import { MealTracker } from "./meals/MealTracker";
+import { SupplementTracker } from "./supplements/SupplementTracker";
 import { ReflectionsCard } from "./ReflectionsCard";
 import { CurrentlyReadingCard } from "./CurrentlyReadingCard";
 
@@ -107,6 +108,9 @@ export function WeekView({ initialData }: { initialData: DashboardData }) {
         <CurrentlyReadingCard weekKey={weekKey} data={data} update={update} />
         <div className="md:col-span-2">
           <MealTracker weekKey={weekKey} weekStart={weekStart} data={data} update={update} />
+        </div>
+        <div className="md:col-span-2">
+          <SupplementTracker weekKey={weekKey} weekStart={weekStart} data={data} update={update} />
         </div>
         <div className="md:col-span-2">
           <ReflectionsCard weekKey={weekKey} data={data} update={update} />
