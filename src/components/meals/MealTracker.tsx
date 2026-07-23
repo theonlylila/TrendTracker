@@ -5,6 +5,7 @@ import type { DashboardData } from "@/lib/types";
 import { MEAL_SLOT_COUNT } from "@/lib/types";
 import { getWeekDays, toDateKey } from "@/lib/week";
 import { ManageMealsModal } from "./ManageMealsModal";
+import { MealNoteModal } from "./MealNoteModal";
 
 type Props = {
   weekKey: string;
@@ -24,6 +25,16 @@ const MEAL_SLOTS = Array.from({ length: MEAL_SLOT_COUNT }, (_, i) => i + 1);
 
 export function MealTracker({ weekKey, weekStart, data, update }: Props) {
   const [manageOpen, setManageOpen] = useState(false);
+  // Which (mealSlot, date) cell's note modal is currently open, if any.
+  // Includes dayLabel/recipeName snapshotted at click time purely so the
+  // modal has display context to show — see MealNoteModal for why those are
+  // never written into the note itself.
+  const [noteFor, setNoteFor] = useState<{
+    mealSlot: number;
+    dateKey: string;
+    dayLabel: string;
+    recipeName: string | null;
+  } | null>(null);
 
   const days = getWeekDays(weekStart);
   const hasSetup = data.recipes.length > 0;
@@ -64,6 +75,10 @@ export function MealTracker({ weekKey, weekStart, data, update }: Props) {
         ],
       };
     });
+  }
+
+  function hasNote(mealSlot: number, dateKey: string) {
+    return data.mealNotes.some((n) => n.mealSlot === mealSlot && n.date === dateKey);
   }
 
   function isChecked(mealSlot: number, dateKey: string) {
@@ -170,7 +185,14 @@ export function MealTracker({ weekKey, weekStart, data, update }: Props) {
                         onChange={(e) => setOverride(mealSlot, dateKey, e.target.value)}
                         className="field w-full py-1 text-xs"
                       >
+                        {/* Prefixed "(default) " — same fix as
+                            WorkoutTracker/StretchTracker — so this never
+                            text-duplicates the real recipe/"Nothing planned"
+                            option below it when the default schedule happens
+                            to point at a recipe that's also in the full
+                            list. */}
                         <option value={DEFAULT_OPTION}>
+                          (default){" "}
                           {recipeName(defaultRecipeId(mealSlot, dayOfWeek)) ?? "Nothing planned"}
                         </option>
                         <option value={NONE_OPTION}>Nothing planned</option>
@@ -194,6 +216,32 @@ export function MealTracker({ weekKey, weekStart, data, update }: Props) {
                       >
                         {checked ? "✓ eaten" : "eaten?"}
                       </button>
+
+                      {/* Always visible, even with nothing planned for this
+                          slot — per your explicit ask, this isn't gated on
+                          having a recipe assigned or being checked eaten,
+                          unlike the "eaten?" button above. */}
+                      <button
+                        onClick={() =>
+                          setNoteFor({
+                            mealSlot,
+                            dateKey,
+                            dayLabel: day.toLocaleDateString(undefined, {
+                              weekday: "long",
+                              month: "short",
+                              day: "numeric",
+                            }),
+                            recipeName: recipeName(recipeId),
+                          })
+                        }
+                        className={`mt-1 w-full font-mono text-[10px] rounded px-1 py-0.5 border transition-colors ${
+                          hasNote(mealSlot, dateKey)
+                            ? "bg-clay-light border-clay-light text-card"
+                            : "border-line text-muted hover:text-clay"
+                        }`}
+                      >
+                        {hasNote(mealSlot, dateKey) ? "✎ noted" : "note"}
+                      </button>
                     </td>
                   );
                 })}
@@ -205,6 +253,22 @@ export function MealTracker({ weekKey, weekStart, data, update }: Props) {
 
       {manageOpen && (
         <ManageMealsModal data={data} update={update} onClose={() => setManageOpen(false)} />
+      )}
+
+      {/* key forces a fresh mount per (mealSlot, date) — same pattern as
+          WorkoutLogModal — so switching which cell's note you're editing
+          without an in-between close never leaves stale local text behind. */}
+      {noteFor && (
+        <MealNoteModal
+          key={`${noteFor.mealSlot}-${noteFor.dateKey}`}
+          mealSlot={noteFor.mealSlot}
+          dateKey={noteFor.dateKey}
+          dayLabel={noteFor.dayLabel}
+          recipeName={noteFor.recipeName}
+          data={data}
+          update={update}
+          onClose={() => setNoteFor(null)}
+        />
       )}
     </div>
   );

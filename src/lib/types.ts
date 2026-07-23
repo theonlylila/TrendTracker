@@ -210,6 +210,21 @@ export interface MealCheck {
   date: string; // YYYY-MM-DD
 }
 
+// A free-text note about how a specific meal, on a specific real day, felt
+// to eat (e.g. "bloated", "energized"). Deliberately its own separate type
+// rather than a field bolted onto MealCheck or MealScheduleOverride — it's
+// keyed only by (mealSlot, date), NOT by recipeId, so if the dropdown
+// selection for that slot/day is changed later, the note stays exactly
+// where it was rather than disappearing or silently moving to a different
+// recipe. No tags, no trend-tracking fields on purpose — this is just a
+// place to jot a thought, nothing more was asked for.
+export interface MealNote {
+  id: string;
+  mealSlot: number;
+  date: string; // YYYY-MM-DD
+  notes: string;
+}
+
 // ---- Supplement tracker ----
 // A supplement in your library — a name and optional notes (e.g. dosage,
 // "take with food"). Deliberately simple, same shape as Exercise/Stretch —
@@ -296,6 +311,7 @@ export interface DashboardData {
   mealDefaultSchedule: MealDefaultScheduleEntry[];
   mealScheduleOverrides: MealScheduleOverride[];
   mealChecks: MealCheck[];
+  mealNotes: MealNote[];
   supplements: Supplement[];
   supplementChecks: SupplementCheck[];
 }
@@ -337,6 +353,7 @@ export const emptyDashboardData: DashboardData = {
   ),
   mealScheduleOverrides: [],
   mealChecks: [],
+  mealNotes: [],
   supplements: [],
   supplementChecks: [],
 };
