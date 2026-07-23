@@ -6,6 +6,7 @@ import { useDashboardStore } from "@/hooks/useDashboardStore";
 import { addWeeks, formatWeekLabel, getMondayOfWeek, getWeekKey } from "@/lib/week";
 import { TaskChecklist } from "./TaskChecklist";
 import { WorkoutTracker } from "./workout/WorkoutTracker";
+import { CardioTracker } from "./cardio/CardioTracker";
 import { StretchTracker } from "./stretch/StretchTracker";
 import { StepsTracker } from "./steps/StepsTracker";
 import { WaterTracker } from "./water/WaterTracker";
@@ -130,6 +131,7 @@ export function WeekView({ initialData }: { initialData: DashboardData }) {
       <div className="grid md:grid-cols-2 gap-5">
         <TaskChecklist weekKey={weekKey} data={data} update={update} />
         <WorkoutTracker weekKey={weekKey} weekStart={weekStart} data={data} update={update} />
+        <CardioTracker weekKey={weekKey} weekStart={weekStart} data={data} update={update} />
         <StretchTracker weekKey={weekKey} weekStart={weekStart} data={data} update={update} />
         <StepsTracker weekKey={weekKey} weekStart={weekStart} data={data} update={update} />
         <WaterTracker weekKey={weekKey} weekStart={weekStart} data={data} update={update} />

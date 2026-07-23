@@ -151,6 +151,52 @@ export interface StretchLog {
   completedStretchIds: string[];
 }
 
+// ---- Cardio tracker ----
+// A single cardio activity in your library, e.g. "Running", "Elliptical" —
+// same shape as Exercise/Stretch/Supplement: a name and optional free-text
+// notes. No "combine into a template" tier the way workouts combine
+// exercises into named workouts — each cardio type is directly the thing
+// you schedule per day, same relationship recipes have to the meal
+// schedule below.
+export interface CardioType {
+  id: string;
+  name: string;
+  notes?: string;
+}
+
+// The repeating default schedule — one entry per day of week, same idea as
+// DefaultScheduleDay for workouts. cardioTypeId: null = no cardio that day —
+// a deliberate rest day, not a gap in the data.
+export interface CardioDefaultScheduleDay {
+  dayOfWeek: number;
+  cardioTypeId: string | null;
+}
+
+// A one-off swap for a specific date, same idea as ScheduleOverride for
+// workouts — takes priority over the default schedule for that date only.
+export interface CardioScheduleOverride {
+  id: string;
+  date: string; // YYYY-MM-DD
+  cardioTypeId: string | null;
+}
+
+// A record of a cardio session actually performed on a given date. Unlike
+// WorkoutLog, there's deliberately no sets/reps/duration/calories/heart-rate
+// structure — just one free-text notes field where all of that can be
+// jotted down, per your explicit choice not to build dedicated fields for
+// each. A CardioLog existing for a date IS what "performed" means here (see
+// CardioConsistencyCalendar) — there's no sub-content to check the way
+// workoutWasPerformed checks for at least one exercise, since there's
+// nothing this log can be "empty" of besides not existing at all.
+export interface CardioLog {
+  id: string;
+  weekKey: string;
+  date: string; // YYYY-MM-DD
+  cardioTypeId: string | null;
+  cardioTypeName: string; // snapshot, so renaming/deleting the type later doesn't rewrite history
+  notes: string;
+}
+
 // ---- Meal tracker ----
 // You always have exactly 5 meal slots a day — generic "Meal 1"..."Meal 5",
 // not renameable to "Breakfast/Lunch/Dinner". Kept as a plain number (1-5)
@@ -314,6 +360,10 @@ export interface DashboardData {
   mealNotes: MealNote[];
   supplements: Supplement[];
   supplementChecks: SupplementCheck[];
+  cardioTypes: CardioType[];
+  cardioDefaultSchedule: CardioDefaultScheduleDay[];
+  cardioScheduleOverrides: CardioScheduleOverride[];
+  cardioLogs: CardioLog[];
 }
 
 export const emptyDashboardData: DashboardData = {
@@ -356,4 +406,11 @@ export const emptyDashboardData: DashboardData = {
   mealNotes: [],
   supplements: [],
   supplementChecks: [],
+  cardioTypes: [],
+  cardioDefaultSchedule: [0, 1, 2, 3, 4, 5, 6].map((dayOfWeek) => ({
+    dayOfWeek,
+    cardioTypeId: null,
+  })),
+  cardioScheduleOverrides: [],
+  cardioLogs: [],
 };

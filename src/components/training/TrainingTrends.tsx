@@ -2,6 +2,7 @@
 
 import type { DashboardData } from "@/lib/types";
 import { ConsistencyCalendar } from "./ConsistencyCalendar";
+import { CardioConsistencyCalendar } from "./CardioConsistencyCalendar";
 import { ExerciseProgressChart } from "./ExerciseProgressChart";
 import { StretchConsistencyCalendar } from "./StretchConsistencyCalendar";
 import { StepsConsistencyCalendar } from "./StepsConsistencyCalendar";
@@ -30,6 +31,11 @@ export function TrainingTrends({ data }: { data: DashboardData }) {
         <div className="card">
           <p className="eyebrow mb-3">Exercise progress</p>
           <ExerciseProgressChart data={data} />
+        </div>
+
+        <div className="card overflow-x-auto">
+          <p className="eyebrow mb-3">Cardio consistency, last 12 weeks</p>
+          <CardioConsistencyCalendar data={data} />
         </div>
 
         <div className="card overflow-x-auto">
