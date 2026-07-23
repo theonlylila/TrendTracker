@@ -2,27 +2,32 @@
 
 import { useState } from "react";
 import type { DashboardData, MaintenanceCategory } from "@/lib/types";
-import { isTaskDue } from "@/lib/maintenance";
+import { isDueByWeekEnd } from "@/lib/maintenance";
 import { toDateKey } from "@/lib/week";
 import { ManageMaintenanceModal } from "./ManageMaintenanceModal";
 
 type Props = {
   category: MaintenanceCategory;
   title: string;
+  weekStart: Date;
   data: DashboardData;
   update: (updater: (prev: DashboardData) => DashboardData) => void;
 };
 
-// Deliberately no weekKey/weekStart props, unlike every other tracker card
-// in WeekView. This card's contents never depend on which week is being
-// viewed — a due task is due regardless of week navigation, so there's
-// nothing week-scoped to pass in. See src/lib/maintenance.ts for the
-// rolling-interval due-date logic this card is built around.
-export function MaintenanceCard({ category, title, data, update }: Props) {
+// Takes weekStart (unlike a plain "ignore the week" design) because this
+// card is a look-ahead planning tool, not just a same-day tracker: it
+// shows every task due by the END of whichever week you're viewing, so
+// flipping forward lets you see what's coming (e.g. "book that eyebrow
+// threading appointment next week") without pretending the task is tied to
+// a specific weekday. An overdue task's due date is always in the past, so
+// it's "due by end of week" for every week you view from here on — that's
+// what keeps it carrying over indefinitely until you mark it done. See
+// isDueByWeekEnd in src/lib/maintenance.ts for the actual comparison.
+export function MaintenanceCard({ category, title, weekStart, data, update }: Props) {
   const [manageOpen, setManageOpen] = useState(false);
 
   const tasksInCategory = data.maintenanceTasks.filter((t) => t.category === category);
-  const dueTasks = tasksInCategory.filter((t) => isTaskDue(t));
+  const dueTasks = tasksInCategory.filter((t) => isDueByWeekEnd(t, weekStart));
 
   // Marking a task "done" just sets today as its last-completed date —
   // that alone moves its due date into the future by however many days

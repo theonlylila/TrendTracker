@@ -135,13 +135,14 @@ export function WeekView({ initialData }: { initialData: DashboardData }) {
         <StretchTracker weekKey={weekKey} weekStart={weekStart} data={data} update={update} />
         <StepsTracker weekKey={weekKey} weekStart={weekStart} data={data} update={update} />
         <WaterTracker weekKey={weekKey} weekStart={weekStart} data={data} update={update} />
-        {/* Unlike every card above, these two don't take weekKey/weekStart —
-            their contents (which tasks are currently due) never depend on
-            which week is being viewed, by design. See MaintenanceCard.tsx
-            and src/lib/maintenance.ts for the rolling-interval due-date
-            logic that makes that true. */}
-        <MaintenanceCard category="cleaning" title="Cleaning" data={data} update={update} />
-        <MaintenanceCard category="beauty" title="Beauty" data={data} update={update} />
+        {/* weekStart (but no weekKey) is passed so these cards can act as a
+            look-ahead planner: they show tasks due by the END of whichever
+            week is being viewed, not just tasks due today. Flipping forward
+            surfaces upcoming maintenance so it can be planned around; an
+            unfinished task keeps appearing on every later week too. See
+            MaintenanceCard.tsx and src/lib/maintenance.ts. */}
+        <MaintenanceCard category="cleaning" title="Cleaning" weekStart={weekStart} data={data} update={update} />
+        <MaintenanceCard category="beauty" title="Beauty" weekStart={weekStart} data={data} update={update} />
         <WeeklyFocusCard weekKey={weekKey} data={data} update={update} />
         <div className="md:col-span-2">
           <MealTracker weekKey={weekKey} weekStart={weekStart} data={data} update={update} />
