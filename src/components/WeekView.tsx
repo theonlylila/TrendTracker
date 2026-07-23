@@ -10,6 +10,7 @@ import { CardioTracker } from "./cardio/CardioTracker";
 import { StretchTracker } from "./stretch/StretchTracker";
 import { StepsTracker } from "./steps/StepsTracker";
 import { WaterTracker } from "./water/WaterTracker";
+import { MaintenanceCard } from "./maintenance/MaintenanceCard";
 import { WeeklyFocusCard } from "./WeeklyFocusCard";
 import { MealTracker } from "./meals/MealTracker";
 import { SupplementTracker } from "./supplements/SupplementTracker";
@@ -134,6 +135,13 @@ export function WeekView({ initialData }: { initialData: DashboardData }) {
         <StretchTracker weekKey={weekKey} weekStart={weekStart} data={data} update={update} />
         <StepsTracker weekKey={weekKey} weekStart={weekStart} data={data} update={update} />
         <WaterTracker weekKey={weekKey} weekStart={weekStart} data={data} update={update} />
+        {/* Unlike every card above, these two don't take weekKey/weekStart —
+            their contents (which tasks are currently due) never depend on
+            which week is being viewed, by design. See MaintenanceCard.tsx
+            and src/lib/maintenance.ts for the rolling-interval due-date
+            logic that makes that true. */}
+        <MaintenanceCard category="cleaning" title="Cleaning" data={data} update={update} />
+        <MaintenanceCard category="beauty" title="Beauty" data={data} update={update} />
         <WeeklyFocusCard weekKey={weekKey} data={data} update={update} />
         <div className="md:col-span-2">
           <MealTracker weekKey={weekKey} weekStart={weekStart} data={data} update={update} />

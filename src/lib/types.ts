@@ -294,6 +294,55 @@ export interface SupplementCheck {
   date: string; // YYYY-MM-DD
 }
 
+// ---- Maintenance tasks (Cleaning / Beauty) ----
+// One shared mechanism behind two separate weekly-view cards (`category`
+// distinguishes them). Unlike every other tracker in this app, these are
+// NOT scoped to weekKey/dateKey — there's no "which day of the week is this
+// assigned to" question, because these are rolling-interval reminders: a
+// task becomes due N days after the last time it was completed, full stop.
+// That means "is this due" has to be computed against the real current
+// date every render, independent of whichever week the user has navigated
+// to in WeekView — that's the core way this feature differs from
+// Workout/Stretch/Meal/Cardio/Supplement, all of which reset per viewed
+// week. Consequently there's no default-schedule/override arrays here —
+// nothing to assign to a day, just this flat library.
+export type MaintenanceCategory = "cleaning" | "beauty";
+
+export type MaintenanceCadence =
+  | "daily"
+  | "weekly"
+  | "biweekly"
+  | "monthly"
+  | "quarterly"
+  | "annually";
+
+// Rolling day-counts per cadence: monthly/quarterly/annually are flat
+// 30/90/365-day intervals from last completion, not calendar
+// months/quarters/years (which would drift to specific calendar dates —
+// deliberately not what this feature does).
+export const MAINTENANCE_CADENCE_DAYS: Record<MaintenanceCadence, number> = {
+  daily: 1,
+  weekly: 7,
+  biweekly: 14,
+  monthly: 30,
+  quarterly: 90,
+  annually: 365,
+};
+
+export interface MaintenanceTask {
+  id: string;
+  category: MaintenanceCategory;
+  name: string;
+  notes?: string;
+  cadence: MaintenanceCadence;
+  // Null = never completed — treated as due immediately, so a freshly
+  // added task shows up right away rather than silently waiting out a full
+  // cadence before you ever see it. Setting this (either by checking the
+  // task off, or by backfilling it in the manage form when first creating
+  // it) is what "starts the clock" for this task's rolling due date.
+  lastCompletedDate: string | null; // YYYY-MM-DD
+}
+
 // ---- Steps tracker ----
 export interface StepEntry {
   id: string;
@@ -355,6 +404,7 @@ export interface DashboardData {
   cardioDefaultSchedule: CardioDefaultScheduleDay[];
   cardioScheduleOverrides: CardioScheduleOverride[];
   cardioLogs: CardioLog[];
+  maintenanceTasks: MaintenanceTask[];
 }
 
 export const emptyDashboardData: DashboardData = {
@@ -403,4 +453,5 @@ export const emptyDashboardData: DashboardData = {
   })),
   cardioScheduleOverrides: [],
   cardioLogs: [],
+  maintenanceTasks: [],
 };
