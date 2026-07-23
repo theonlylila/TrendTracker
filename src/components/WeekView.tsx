@@ -14,7 +14,6 @@ import { WeeklyFocusCard } from "./WeeklyFocusCard";
 import { MealTracker } from "./meals/MealTracker";
 import { SupplementTracker } from "./supplements/SupplementTracker";
 import { ReflectionsCard } from "./ReflectionsCard";
-import { CurrentlyReadingCard } from "./CurrentlyReadingCard";
 
 const statusLabel: Record<string, string> = {
   idle: "",
@@ -136,7 +135,6 @@ export function WeekView({ initialData }: { initialData: DashboardData }) {
         <StepsTracker weekKey={weekKey} weekStart={weekStart} data={data} update={update} />
         <WaterTracker weekKey={weekKey} weekStart={weekStart} data={data} update={update} />
         <WeeklyFocusCard weekKey={weekKey} data={data} update={update} />
-        <CurrentlyReadingCard weekKey={weekKey} data={data} update={update} />
         <div className="md:col-span-2">
           <MealTracker weekKey={weekKey} weekStart={weekStart} data={data} update={update} />
         </div>

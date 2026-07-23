@@ -325,20 +325,11 @@ export interface Reflection {
   text: string;
 }
 
-export interface CurrentlyReading {
-  id: string;
-  weekKey: string;
-  title: string;
-  author: string;
-  coverUrl?: string;
-}
-
 export interface DashboardData {
   tasks: Task[];
   gymSessions: GymSession[];
   weeklyFocuses: WeeklyFocus[];
   reflections: Reflection[];
-  currentlyReading: CurrentlyReading[];
   exercises: Exercise[];
   workoutTemplates: WorkoutTemplate[];
   defaultSchedule: DefaultScheduleDay[];
@@ -371,7 +362,6 @@ export const emptyDashboardData: DashboardData = {
   gymSessions: [],
   weeklyFocuses: [],
   reflections: [],
-  currentlyReading: [],
   exercises: [],
   workoutTemplates: [],
   defaultSchedule: [0, 1, 2, 3, 4, 5, 6].map((dayOfWeek) => ({
