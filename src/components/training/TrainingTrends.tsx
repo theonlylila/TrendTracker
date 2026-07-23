@@ -5,13 +5,14 @@ import { ConsistencyCalendar } from "./ConsistencyCalendar";
 import { ExerciseProgressChart } from "./ExerciseProgressChart";
 import { StretchConsistencyCalendar } from "./StretchConsistencyCalendar";
 import { StepsConsistencyCalendar } from "./StepsConsistencyCalendar";
+import { WaterConsistencyCalendar } from "./WaterConsistencyCalendar";
 
 export function TrainingTrends({ data }: { data: DashboardData }) {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <p className="eyebrow">Movement trends</p>
+          <p className="eyebrow">Wellness trends</p>
           <h1 className="font-display text-2xl mt-1 text-ink">How it&apos;s going</h1>
         </div>
         {/* Plain <a>, not next/link's <Link> — see the note in src/app/page.tsx for why. */}
@@ -39,6 +40,11 @@ export function TrainingTrends({ data }: { data: DashboardData }) {
         <div className="card overflow-x-auto">
           <p className="eyebrow mb-3">Steps goal, last 12 weeks</p>
           <StepsConsistencyCalendar data={data} />
+        </div>
+
+        <div className="card overflow-x-auto">
+          <p className="eyebrow mb-3">Water goal, last 12 weeks</p>
+          <WaterConsistencyCalendar data={data} />
         </div>
       </div>
     </div>

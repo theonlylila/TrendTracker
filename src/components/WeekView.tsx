@@ -8,6 +8,7 @@ import { TaskChecklist } from "./TaskChecklist";
 import { WorkoutTracker } from "./workout/WorkoutTracker";
 import { StretchTracker } from "./stretch/StretchTracker";
 import { StepsTracker } from "./steps/StepsTracker";
+import { WaterTracker } from "./water/WaterTracker";
 import { WeeklyFocusCard } from "./WeeklyFocusCard";
 import { MealTracker } from "./meals/MealTracker";
 import { SupplementTracker } from "./supplements/SupplementTracker";
@@ -121,7 +122,7 @@ export function WeekView({ initialData }: { initialData: DashboardData }) {
             }}
             className="font-mono text-[11px] text-clay hover:underline"
           >
-            Movement trends →
+            Wellness trends →
           </a>
         </div>
       </div>
@@ -131,6 +132,7 @@ export function WeekView({ initialData }: { initialData: DashboardData }) {
         <WorkoutTracker weekKey={weekKey} weekStart={weekStart} data={data} update={update} />
         <StretchTracker weekKey={weekKey} weekStart={weekStart} data={data} update={update} />
         <StepsTracker weekKey={weekKey} weekStart={weekStart} data={data} update={update} />
+        <WaterTracker weekKey={weekKey} weekStart={weekStart} data={data} update={update} />
         <WeeklyFocusCard weekKey={weekKey} data={data} update={update} />
         <CurrentlyReadingCard weekKey={weekKey} data={data} update={update} />
         <div className="md:col-span-2">

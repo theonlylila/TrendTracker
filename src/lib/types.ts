@@ -241,6 +241,18 @@ export interface StepEntry {
   steps: number;
 }
 
+// ---- Water tracker ----
+// Deliberately the exact same shape as StepEntry/stepsGoal — one number per
+// day, one shared daily goal, "did today meet the goal" derived by
+// comparing the two. `liters` is a plain number (not an integer like steps)
+// since water intake is naturally logged in fractional amounts (e.g. 1.5L).
+export interface WaterEntry {
+  id: string;
+  weekKey: string;
+  date: string; // YYYY-MM-DD
+  liters: number;
+}
+
 export interface WeeklyFocus {
   weekKey: string;
   focus: string;
@@ -278,6 +290,8 @@ export interface DashboardData {
   stretchLogs: StretchLog[];
   stepEntries: StepEntry[];
   stepsGoal: number;
+  waterEntries: WaterEntry[];
+  waterGoal: number; // liters
   recipes: Recipe[];
   mealDefaultSchedule: MealDefaultScheduleEntry[];
   mealScheduleOverrides: MealScheduleOverride[];
@@ -310,6 +324,8 @@ export const emptyDashboardData: DashboardData = {
   stretchLogs: [],
   stepEntries: [],
   stepsGoal: 15000,
+  waterEntries: [],
+  waterGoal: 5,
   recipes: [],
   // Pre-populate every (mealSlot, dayOfWeek) combination up front — same
   // reasoning as defaultSchedule/stretchDefaultSchedule above: the UI can
