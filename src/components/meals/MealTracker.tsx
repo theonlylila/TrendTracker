@@ -239,7 +239,15 @@ export function MealTracker({ weekKey, weekStart, data, update }: Props) {
                       {/* Always visible, even with nothing planned for this
                           slot — per your explicit ask, this isn't gated on
                           having a recipe assigned or being checked eaten,
-                          unlike the "eaten?" button above. */}
+                          unlike the "eaten?" button above. Deliberately no
+                          border/background box though (unlike "eaten?"),
+                          just plain small text — same weight as the "manage"
+                          links elsewhere in the app — so it reads as a quiet,
+                          secondary affordance rather than competing with
+                          "eaten?" for attention in every cell. When a note
+                          does exist, the clay color is the only visual cue
+                          that distinguishes it, so you can still spot noted
+                          cells at a glance without the button being loud. */}
                       <button
                         onClick={() =>
                           setNoteFor({
@@ -253,10 +261,10 @@ export function MealTracker({ weekKey, weekStart, data, update }: Props) {
                             recipeName: recipeName(recipeId),
                           })
                         }
-                        className={`mt-1 w-full font-mono text-[10px] rounded px-1 py-0.5 border transition-colors ${
+                        className={`mt-1 w-full font-mono text-[10px] text-center transition-colors ${
                           hasNote(mealSlot, dateKey)
-                            ? "bg-clay-light border-clay-light text-card"
-                            : "border-line text-muted hover:text-clay"
+                            ? "text-clay"
+                            : "text-muted/70 hover:text-clay"
                         }`}
                       >
                         {hasNote(mealSlot, dateKey) ? "✎ noted" : "note"}
