@@ -97,6 +97,7 @@ export function StretchTracker({ weekKey, weekStart, data, update }: Props) {
           const dateKey = toDateKey(day);
           const dayOfWeek = day.getDay();
           const routineId = effectiveRoutineId(dateKey, dayOfWeek);
+          const routine = routineFor(routineId);
           const hasOverride = data.stretchScheduleOverrides.some((o) => o.date === dateKey);
           const complete = isDayComplete(dateKey, routineId);
 
@@ -106,30 +107,46 @@ export function StretchTracker({ weekKey, weekStart, data, update }: Props) {
                 {day.toLocaleDateString(undefined, { weekday: "short" })}
               </span>
 
-              <select
-                value={hasOverride ? routineId ?? NONE_OPTION : DEFAULT_OPTION}
-                onChange={(e) => setOverride(dateKey, e.target.value)}
-                className="field flex-1 py-1 text-sm"
-              >
-                {/* Prefixed "(default) " — same fix as WorkoutTracker/
-                    MealTracker — so this never text-duplicates the real
-                    routine/"No stretching" option below it when the default
-                    schedule happens to point at a routine that's also in the
-                    full list. */}
-                <option value={DEFAULT_OPTION}>
-                  (default){" "}
-                  {routineFor(
-                    data.stretchDefaultSchedule.find((d) => d.dayOfWeek === dayOfWeek)?.routineId ??
-                      null
-                  )?.name ?? "No stretching"}
-                </option>
-                <option value={NONE_OPTION}>No stretching</option>
-                {data.stretchRoutines.map((r) => (
-                  <option key={r.id} value={r.id}>
-                    {r.name}
+              <div className="relative flex-1">
+                <select
+                  value={hasOverride ? routineId ?? NONE_OPTION : DEFAULT_OPTION}
+                  onChange={(e) => setOverride(dateKey, e.target.value)}
+                  className="field w-full py-1 text-sm text-transparent"
+                >
+                  {/* Prefixed "(default) " — same fix as WorkoutTracker/
+                      MealTracker — so this never text-duplicates the real
+                      routine/"No stretching" option below it when the default
+                      schedule happens to point at a routine that's also in the
+                      full list. This text is what shows once the dropdown is
+                      clicked open — see the overlay note below for why it
+                      doesn't show while closed. */}
+                  <option value={DEFAULT_OPTION}>
+                    (default){" "}
+                    {routineFor(
+                      data.stretchDefaultSchedule.find((d) => d.dayOfWeek === dayOfWeek)
+                        ?.routineId ?? null
+                    )?.name ?? "No stretching"}
                   </option>
-                ))}
-              </select>
+                  <option value={NONE_OPTION}>No stretching</option>
+                  {data.stretchRoutines.map((r) => (
+                    <option key={r.id} value={r.id}>
+                      {r.name}
+                    </option>
+                  ))}
+                </select>
+                {/* Same overlay technique as WorkoutTracker: the select's own
+                    text is transparent, so this decorative, pointer-events-none
+                    layer is what's actually visible while closed — plain name,
+                    no "(default) " prefix. Opening the dropdown still shows the
+                    real disambiguated option text, since the native popped-open
+                    list is drawn from each <option>'s own text, not this
+                    overlay or the select's (transparent) color. */}
+                <span className="pointer-events-none absolute inset-0 flex items-center">
+                  <span className="pl-3 pr-7 truncate min-w-0 flex-1 text-sm">
+                    {routine?.name ?? "No stretching"}
+                  </span>
+                </span>
+              </div>
 
               <button
                 onClick={() => setLogDateKey(dateKey)}

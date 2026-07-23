@@ -180,28 +180,47 @@ export function MealTracker({ weekKey, weekStart, data, update }: Props) {
 
                   return (
                     <td key={dateKey} className="align-top px-1 py-1 min-w-[120px]">
-                      <select
-                        value={hasOverride ? recipeId ?? NONE_OPTION : DEFAULT_OPTION}
-                        onChange={(e) => setOverride(mealSlot, dateKey, e.target.value)}
-                        className="field w-full py-1 text-xs"
-                      >
-                        {/* Prefixed "(default) " — same fix as
-                            WorkoutTracker/StretchTracker — so this never
-                            text-duplicates the real recipe/"Nothing planned"
-                            option below it when the default schedule happens
-                            to point at a recipe that's also in the full
-                            list. */}
-                        <option value={DEFAULT_OPTION}>
-                          (default){" "}
-                          {recipeName(defaultRecipeId(mealSlot, dayOfWeek)) ?? "Nothing planned"}
-                        </option>
-                        <option value={NONE_OPTION}>Nothing planned</option>
-                        {data.recipes.map((r) => (
-                          <option key={r.id} value={r.id}>
-                            {r.name}
+                      <div className="relative">
+                        <select
+                          value={hasOverride ? recipeId ?? NONE_OPTION : DEFAULT_OPTION}
+                          onChange={(e) => setOverride(mealSlot, dateKey, e.target.value)}
+                          className="field w-full py-1 text-xs text-transparent"
+                        >
+                          {/* Prefixed "(default) " — same fix as
+                              WorkoutTracker/StretchTracker — so this never
+                              text-duplicates the real recipe/"Nothing planned"
+                              option below it when the default schedule happens
+                              to point at a recipe that's also in the full
+                              list. This text is what shows once the dropdown
+                              is clicked open — see the overlay note below for
+                              why it doesn't show while closed. */}
+                          <option value={DEFAULT_OPTION}>
+                            (default){" "}
+                            {recipeName(defaultRecipeId(mealSlot, dayOfWeek)) ?? "Nothing planned"}
                           </option>
-                        ))}
-                      </select>
+                          <option value={NONE_OPTION}>Nothing planned</option>
+                          {data.recipes.map((r) => (
+                            <option key={r.id} value={r.id}>
+                              {r.name}
+                            </option>
+                          ))}
+                        </select>
+                        {/* Same overlay technique as WorkoutTracker/
+                            StretchTracker/CardioTracker: the select's own
+                            text is transparent, so this decorative,
+                            pointer-events-none layer is what's actually
+                            visible while closed — plain name, no "(default) "
+                            prefix. Opening the dropdown still shows the real
+                            disambiguated option text, since the native
+                            popped-open list is drawn from each <option>'s own
+                            text, not this overlay or the select's
+                            (transparent) color. */}
+                        <span className="pointer-events-none absolute inset-0 flex items-center">
+                          <span className="pl-3 pr-7 truncate min-w-0 flex-1 text-xs">
+                            {recipeName(recipeId) ?? "Nothing planned"}
+                          </span>
+                        </span>
+                      </div>
 
                       <button
                         onClick={() => toggleChecked(mealSlot, dateKey)}

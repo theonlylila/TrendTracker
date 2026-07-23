@@ -102,29 +102,46 @@ export function CardioTracker({ weekKey, weekStart, data, update }: Props) {
                 {day.toLocaleDateString(undefined, { weekday: "short" })}
               </span>
 
-              <select
-                value={hasOverride ? cardioTypeId ?? REST_OPTION : DEFAULT_OPTION}
-                onChange={(e) => setOverride(dateKey, e.target.value)}
-                className="field flex-1 py-1 text-sm"
-              >
-                {/* Prefixed "(default) " so this never text-duplicates the
-                    real cardio type/"Rest day" option below it when the
-                    default schedule happens to point at a type that's also
-                    in the full list. */}
-                <option value={DEFAULT_OPTION}>
-                  (default){" "}
-                  {cardioTypeFor(
-                    data.cardioDefaultSchedule.find((d) => d.dayOfWeek === dayOfWeek)
-                      ?.cardioTypeId ?? null
-                  )?.name ?? "Rest day"}
-                </option>
-                <option value={REST_OPTION}>Rest day</option>
-                {data.cardioTypes.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
+              <div className="relative flex-1">
+                <select
+                  value={hasOverride ? cardioTypeId ?? REST_OPTION : DEFAULT_OPTION}
+                  onChange={(e) => setOverride(dateKey, e.target.value)}
+                  className="field w-full py-1 text-sm text-transparent"
+                >
+                  {/* Prefixed "(default) " so this never text-duplicates the
+                      real cardio type/"Rest day" option below it when the
+                      default schedule happens to point at a type that's also
+                      in the full list. This text is what shows once the
+                      dropdown is clicked open — see the overlay note below
+                      for why it doesn't show while closed. */}
+                  <option value={DEFAULT_OPTION}>
+                    (default){" "}
+                    {cardioTypeFor(
+                      data.cardioDefaultSchedule.find((d) => d.dayOfWeek === dayOfWeek)
+                        ?.cardioTypeId ?? null
+                    )?.name ?? "Rest day"}
                   </option>
-                ))}
-              </select>
+                  <option value={REST_OPTION}>Rest day</option>
+                  {data.cardioTypes.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+                {/* Same overlay technique as WorkoutTracker/StretchTracker:
+                    the select's own text is transparent, so this decorative,
+                    pointer-events-none layer is what's actually visible while
+                    closed — plain name, no "(default) " prefix. Opening the
+                    dropdown still shows the real disambiguated option text,
+                    since the native popped-open list is drawn from each
+                    <option>'s own text, not this overlay or the select's
+                    (transparent) color. */}
+                <span className="pointer-events-none absolute inset-0 flex items-center">
+                  <span className="pl-3 pr-7 truncate min-w-0 flex-1 text-sm">
+                    {cardioType?.name ?? "Rest day"}
+                  </span>
+                </span>
+              </div>
 
               <button
                 onClick={() => setLogDateKey(dateKey)}

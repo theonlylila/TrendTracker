@@ -104,31 +104,51 @@ export function WorkoutTracker({ weekKey, weekStart, data, update }: Props) {
                 {day.toLocaleDateString(undefined, { weekday: "short" })}
               </span>
 
-              <select
-                value={hasOverride ? templateId ?? REST_OPTION : DEFAULT_OPTION}
-                onChange={(e) => setOverride(dateKey, e.target.value)}
-                className="field flex-1 py-1 text-sm"
-              >
-                {/* Prefixed "(default) " so this never renders as an exact
-                    text duplicate of the real template/"Rest day" option
-                    below it — without this, whenever the default schedule
-                    points at a template that's also in the full list (which
-                    it always is), the same name would appear twice in the
-                    dropdown with no way to tell them apart. */}
-                <option value={DEFAULT_OPTION}>
-                  (default){" "}
-                  {templateFor(
-                    data.defaultSchedule.find((d) => d.dayOfWeek === dayOfWeek)?.workoutTemplateId ??
-                      null
-                  )?.name ?? "Rest day"}
-                </option>
-                <option value={REST_OPTION}>Rest day</option>
-                {data.workoutTemplates.map((w) => (
-                  <option key={w.id} value={w.id}>
-                    {w.name}
+              <div className="relative flex-1">
+                <select
+                  value={hasOverride ? templateId ?? REST_OPTION : DEFAULT_OPTION}
+                  onChange={(e) => setOverride(dateKey, e.target.value)}
+                  className="field w-full py-1 text-sm text-transparent"
+                >
+                  {/* Prefixed "(default) " so this never renders as an exact
+                      text duplicate of the real template/"Rest day" option
+                      below it — without this, whenever the default schedule
+                      points at a template that's also in the full list (which
+                      it always is), the same name would appear twice in the
+                      dropdown with no way to tell them apart. This text is
+                      still exactly what shows once you click the dropdown
+                      open (see the overlay note below for why). */}
+                  <option value={DEFAULT_OPTION}>
+                    (default){" "}
+                    {templateFor(
+                      data.defaultSchedule.find((d) => d.dayOfWeek === dayOfWeek)
+                        ?.workoutTemplateId ?? null
+                    )?.name ?? "Rest day"}
                   </option>
-                ))}
-              </select>
+                  <option value={REST_OPTION}>Rest day</option>
+                  {data.workoutTemplates.map((w) => (
+                    <option key={w.id} value={w.id}>
+                      {w.name}
+                    </option>
+                  ))}
+                </select>
+                {/* The select's own text is set to text-transparent above —
+                    this overlay is what you actually see while it's closed,
+                    showing the plain name with no "(default) " prefix so the
+                    weekly view doesn't read as cluttered. It's
+                    pointer-events-none (clicks pass through to the real
+                    select underneath) and purely decorative: once you click
+                    to open the dropdown, this overlay is still there but the
+                    native option list renders on top of it from the actual
+                    <option> elements, "(default) " prefix and all, since
+                    browsers draw that popped-open list from each option's own
+                    text rather than the select box's (transparent) color. */}
+                <span className="pointer-events-none absolute inset-0 flex items-center">
+                  <span className="pl-3 pr-7 truncate min-w-0 flex-1 text-sm">
+                    {template?.name ?? "Rest day"}
+                  </span>
+                </span>
+              </div>
 
               <button
                 onClick={() => setLogDateKey(dateKey)}
