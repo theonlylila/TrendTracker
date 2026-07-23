@@ -2,30 +2,36 @@
 @tailwind components;
 @tailwind utilities;
 
+/* These base-layer rules use raw hex values (not Tailwind tokens), so they
+   have to be updated by hand to match the pastel palette in
+   tailwind.config.ts. Each one below mirrors a token: the dot-grid uses the
+   pink accent, selection uses candy-pink on card-white, focus uses the pink
+   accent, input text uses plum ink, and the placeholder is a light mauve. */
 @layer base {
   body {
-    background-image: radial-gradient(circle at 1px 1px, rgba(74, 63, 54, 0.05) 1px, transparent 0);
+    /* Subtle pink polka-dot grid (was warm-brown) — clay pink at low opacity */
+    background-image: radial-gradient(circle at 1px 1px, rgba(210, 75, 145, 0.06) 1px, transparent 0);
     background-size: 20px 20px;
   }
 
   ::selection {
-    background: #d68d84;
-    color: #fbf7ee;
+    background: #d24b91; /* clay — candy pink */
+    color: #fffafd; /* card — near-white */
   }
 
   :focus-visible {
-    outline: 2px solid #785b4e;
+    outline: 2px solid #d24b91; /* clay — candy pink */
     outline-offset: 2px;
   }
 
   input,
   textarea {
-    color: #4a3f36;
+    color: #5a3a55; /* ink — deep plum */
   }
 
   input::placeholder,
   textarea::placeholder {
-    color: #b3a68e;
+    color: #cba3bd; /* light mauve, softer than muted */
   }
 }
 

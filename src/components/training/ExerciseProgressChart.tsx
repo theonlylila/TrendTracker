@@ -100,7 +100,7 @@ export function ExerciseProgressChart({ data }: { data: DashboardData }) {
         <SimpleLineChart
           points={points}
           unit={unit}
-          color={metric === "weight" ? "#785b4e" : "#7a816c"}
+          color={metric === "weight" ? "#d24b91" : "#9f88d4"}
         />
       )}
     </div>

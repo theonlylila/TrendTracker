@@ -20,7 +20,10 @@ export function burstConfetti(originX: number, originY: number) {
     return;
   }
 
-  const colors = ["#c98a5e", "#8e967d", "#d68d84", "#cfbb9f", "#785b4e"];
+  // Cutesy pastel confetti — pink, candy pink, lavender, baby blue, and
+  // buttery yellow. This is where the "open to blues/purples/yellows" sprinkle
+  // lives, since the celebration burst is a fun place for the extra colors.
+  const colors = ["#f4a9cd", "#d24b91", "#b7a4e2", "#a7d8f0", "#f6e3a0"];
   const particles = Array.from({ length: 26 }, () => ({
     x: originX,
     y: originY,

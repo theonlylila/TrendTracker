@@ -11,7 +11,7 @@ const HEIGHT = 180;
 const PAD_X = 30;
 const PAD_Y = 22;
 
-export function SimpleLineChart({ points, unit = "", color = "#785b4e" }: Props) {
+export function SimpleLineChart({ points, unit = "", color = "#d24b91" }: Props) {
   if (points.length === 0) return null;
 
   const values = points.map((p) => p.value);
@@ -43,7 +43,7 @@ export function SimpleLineChart({ points, unit = "", color = "#785b4e" }: Props)
         y1={PAD_Y + innerH}
         x2={WIDTH - PAD_X}
         y2={PAD_Y + innerH}
-        stroke="#e3d7c0"
+        stroke="#f6d3e6"
       />
 
       <text x={PAD_X} y={PAD_Y - 8} fontSize={10} className="fill-muted font-mono">
