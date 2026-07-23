@@ -111,7 +111,13 @@ export function StretchTracker({ weekKey, weekStart, data, update }: Props) {
                 onChange={(e) => setOverride(dateKey, e.target.value)}
                 className="field flex-1 py-1 text-sm"
               >
+                {/* Prefixed "(default) " — same fix as WorkoutTracker/
+                    MealTracker — so this never text-duplicates the real
+                    routine/"No stretching" option below it when the default
+                    schedule happens to point at a routine that's also in the
+                    full list. */}
                 <option value={DEFAULT_OPTION}>
+                  (default){" "}
                   {routineFor(
                     data.stretchDefaultSchedule.find((d) => d.dayOfWeek === dayOfWeek)?.routineId ??
                       null

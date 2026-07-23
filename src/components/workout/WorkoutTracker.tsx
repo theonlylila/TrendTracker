@@ -109,7 +109,14 @@ export function WorkoutTracker({ weekKey, weekStart, data, update }: Props) {
                 onChange={(e) => setOverride(dateKey, e.target.value)}
                 className="field flex-1 py-1 text-sm"
               >
+                {/* Prefixed "(default) " so this never renders as an exact
+                    text duplicate of the real template/"Rest day" option
+                    below it — without this, whenever the default schedule
+                    points at a template that's also in the full list (which
+                    it always is), the same name would appear twice in the
+                    dropdown with no way to tell them apart. */}
                 <option value={DEFAULT_OPTION}>
+                  (default){" "}
                   {templateFor(
                     data.defaultSchedule.find((d) => d.dayOfWeek === dayOfWeek)?.workoutTemplateId ??
                       null
